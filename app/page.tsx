@@ -1,7 +1,7 @@
 import MainContent from '@/components/MainContent'
 
 export default async function Home() {
-  const res = await fetch(`/api/entries`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/entries`, {
     cache: 'no-store',
   })
 
