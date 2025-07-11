@@ -36,16 +36,13 @@ const MainContent = ({ entries }: Props) => {
         desc: value,
       })
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BASE_URL}/api/entries`,
-        {
-          body: JSON.stringify({ id, desc: value }),
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          method: 'POST',
-        }
-      )
+      const res = await fetch(`/api/entries`, {
+        body: JSON.stringify({ id, desc: value }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+      })
       const json = await res.json()
 
       if (!res.ok || !json.success) {
