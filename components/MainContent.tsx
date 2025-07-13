@@ -1,54 +1,41 @@
 'use client'
 
-import { Entry } from '@/types'
+import { addDomain } from '@/lib/domain.action'
+import { Domains } from '@/types'
 import { SendHorizonal } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { nanoid } from 'nanoid'
 
 import { FormEvent, useOptimistic, useState, useTransition } from 'react'
 import toast from 'react-hot-toast'
 
 type Props = {
-  entries: Entry[]
+  domains: Domains[]
 }
 
-const MainContent = ({ entries }: Props) => {
-  const [optimisticEntries, addOptimisticEntry] = useOptimistic(
-    entries,
-    (state, newEntry: Entry) => [newEntry, ...state]
+const MainContent = ({ domains }: Props) => {
+  const [optimisticDomains, addOptimisticDomain] = useOptimistic(
+    domains,
+    (state, newDomain: Domains) => [newDomain, ...state]
   )
-  const router = useRouter()
+
   const [, startTransition] = useTransition()
   const [value, setValue] = useState<string>('')
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!value) return
-    const id = Date.now()
+    const id = nanoid()
 
     setValue('')
     startTransition(async () => {
-      addOptimisticEntry({
-        id,
-        desc: value,
+      addOptimisticDomain({
+        sid: id,
+        domain_name: value,
       })
-      console.log({
-        id,
-        desc: value,
-      })
+      const res = await addDomain(value)
 
-      const res = await fetch(`/api/entries`, {
-        body: JSON.stringify({ id, desc: value }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-      })
-      const json = await res.json()
-
-      if (!res.ok || !json.success) {
-        toast('something went wrong')
-      } else {
-        router.refresh()
+      if (res.success) {
+        toast(res.message)
       }
     })
   }
@@ -74,12 +61,12 @@ const MainContent = ({ entries }: Props) => {
         </form>
       </div>
       <div className="h-full bg-gray-600 overflow-y-auto flex flex-col gap-4 py-2 ">
-        {optimisticEntries.map((entry) => (
+        {optimisticDomains.map((domain) => (
           <div
-            key={entry.id}
+            key={domain.sid}
             className="bg-gray-500 py-2 px-2  mx-2 rounded-xl text-xl "
           >
-            <p className="truncate">{entry.desc}</p>
+            <p className="truncate">{domain.domain_name || domain.sid}</p>
           </div>
         ))}
       </div>

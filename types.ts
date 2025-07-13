@@ -1,4 +1,4 @@
-export type Entry = {
-  id: number
-  desc: string
+export type Domains = {
+  sid: string
+  domain_name?: string
 }
