@@ -8,7 +8,7 @@ export default async function Home() {
     }
   )
 
-  /*   if (!res.ok) return null */
+  if (!res.ok) return null
 
   const data = await res.json()
 
